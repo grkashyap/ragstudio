@@ -1,0 +1,38 @@
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2rem;
+}
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background-color: #28a745;
+    z-index: 0;
+}
+.step {
+    position: relative;
+    text-align: center;
+    z-index: 1;
+    width: 25%;
+}
+.circle {
+    width: 35px;
+    height: 35px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    line-height: 35px;
+    margin: auto;
+}
+.step-label {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+.circle.inactive {
+    background-color: #ccc;
+}
