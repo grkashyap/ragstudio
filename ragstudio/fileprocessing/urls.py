@@ -3,6 +3,6 @@ from fileprocessing import views
 
 urlpatterns = [
     path("", views.fileupload, name="fileprocessing"),
-    path("chunking", views.chunking, name="chunking")
+    path("chunking/<uuid:request_id>", views.chunking, name="chunking")
 
 ]

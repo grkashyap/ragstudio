@@ -19,7 +19,18 @@ class FileForm(forms.Form):
         return uploaded_file
 
 class ChunkingForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea, label='Preview (First 10 lines)')
+    CHUNKING_STRATEGY_CHOICES = [
+        ('fixed', 'Fixed'),
+        ('recursive','Recursive'),
+        ('semantic', 'Semantic')
+    ]
+    chunking_strategy = forms.ChoiceField(choices=CHUNKING_STRATEGY_CHOICES, widget=forms.Select(attrs={'class':'form-select'}))
+
+    # fixed size chunking field
+    chunk_size = forms.IntegerField(label='Chunk Size', required=False, widget=forms.NumberInput(attrs={'class':'conditional-chunking-arg fixed-chunk form-control'}))
+    chunk_overlap = forms.IntegerField(label='Chunk Overlap', required=False, widget=forms.NumberInput(attrs={'class':'conditional-chunking-arg fixed-chunk form-control'}))
+
+
 
 class EmbeddingForm(forms.Form):
     age = forms.IntegerField(label="Age")
