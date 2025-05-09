@@ -3,7 +3,18 @@ from .forms import FileForm, ChunkingForm
 import uuid
 from markitdown import MarkItDown
 from io import BytesIO
-from .utils import chunk_document_fixed
+from .utils import fixed_chunk_document, recursive_chunk_document
+
+def restart(request, request_id):
+    """
+        Method to handle restart of the flow
+    """
+    str_request_id = str(request_id)
+
+    if request.session.get(str_request_id):
+        del request.session[str_request_id]
+
+    return redirect("")
 
 def fileupload(request):
     """
@@ -60,7 +71,27 @@ def chunking(request, request_id):
             if chunking_strategy == 'fixed':
                 chunk_size = chunking_form.cleaned_data['chunk_size']
                 chunk_overlap = chunking_form.cleaned_data['chunk_overlap']
-                chunk_data = chunk_document_fixed(document_content=doc_text, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+                chunk_data = fixed_chunk_document(document_content=doc_text, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+
+                # set it to session and return context
+                current_session_data = request.session.get(str_request_id)
+                current_session_data['chunks'] = chunk_data
+                request.session[str_request_id] = current_session_data
+
+                chunking_context = {
+                    'chunking_form': chunking_form,
+                    'step': 2,
+                    'text': trimmed_text,
+                    'chunk_data': chunk_data[:25]
+                }
+
+                return render(request=request, template_name=template, context=chunking_context)
+
+            elif chunking_strategy == 'recursive':
+                chunk_size = chunking_form.cleaned_data['chunk_size']
+                chunk_overlap = chunking_form.cleaned_data['chunk_overlap']
+                chunk_data = recursive_chunk_document(document_content=doc_text, chunk_size=chunk_size,
+                                                  chunk_overlap=chunk_overlap)
 
                 # set it to session and return context
                 current_session_data = request.session.get(str_request_id)
@@ -76,8 +107,6 @@ def chunking(request, request_id):
 
                 return render(request=request, template_name=template, context=chunking_context)
 
-            elif chunking_strategy == 'recursive':
-                pass
             elif chunking_strategy == 'semantic':
                 pass
 
